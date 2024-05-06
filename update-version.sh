@@ -50,5 +50,8 @@ OUTPUT={"jsonrpc":"2.0","result":"0xZZZZZZZZZZZ","id":1}\n    printf '${OUTPUT}'
 
 # references
 #
+# https://substrate.stackexchange.com/a/1660/83
 # https://gist.github.com/steinwaywhw/a4cd19cda655b8249d908261a62687f8
+# https://stackoverflow.com/questions/57587094/can-i-make-docker-do-always-a-pull-when-performing-a-run
+# https://stackoverflow.com/questions/43373176/store-json-directly-in-bash-script-with-variables
 
