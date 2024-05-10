@@ -21,8 +21,40 @@ touch /root/check-version-slave.sh && chmod 755 /root/check-version-slave.sh
 
 ## Rotate validator session keys with via CLI with Polkadot.js Tools instead of via UI with Polkadot.js Apps 
 
+* Rotate validator session keys on localhost and store generated session key in a variable
+
+```bash
+OUTPUT=$(
+  curl -H "Content-Type: application/json" -d '{"id":1, "jsonrpc":"2.0", "method": "author_rotateKeys", "params":[]}' http://localhost:9944
+)
+SESSION_KEY=$(printf "${OUTPUT}" | jq -r '.result')
+printf "${SESSION_KEY}"
+```
+
+* Set the validator session keys into the local validator
+  * Create environment variable file from the example
+    ```
+    cp .env-example .env
+    ```
+  * Populate .env with other values
+    * Use the secret seed of the validator for the value of `SEED`
+    * Obtain the IP address on the remote server with `ifconfig` as value of `REMOTE_IP_ADDRESS`
+    * Obtain the architecture of the remote server with `uname -a` as value of `PLATFORM`
+    * Use the session key generated earlier as the value of `SESSION_KEY`
+  * Run 
+    ```
+    . ./scripts/rotate-keys-main.sh
+    ```
+  * **FIXME**: If I run the script not on the same machine as the validator and use the secret seed of a testnet account with sufficient balance and run the above it gives error:
+    ```
+    RpcError: 1010: Invalid Transaction: Inability to pay some fees , e.g. account balance too low
+    ``` 
+  * **FIXME**: If I run the below command on the validator server that is running the validator instead of from a separate machine it returns error `API-WS: disconnected from ws://127.0.0.1:9944: 1006:: Abnormal Closure`, even if I am running the validator with `--unsafe-rpc-external --rpc-cors=all --rpc-methods=Unsafe` (that should not be used in production)
+
+### Optional Experiments
 
 * Optional: pull docker image from dockerhub for https://github.com/polkadot-js/tools
+
 ```bash
 docker pull jacogr/polkadot-js-tools:latest
 ```
@@ -35,16 +67,6 @@ export PLATFORM="linux/amd64"
 docker run -it --platform $PLATFORM --rm $(docker pull --platform $PLATFORM jacogr/polkadot-js-tools:latest | grep Status |  awk 'NF>1{print $NF}') --help
 ```
 
-* Optional: Rotate validator session keys on localhost and store generated session key in a variable
-
-```bash
-OUTPUT=$(
-  curl -H "Content-Type: application/json" -d '{"id":1, "jsonrpc":"2.0", "method": "author_rotateKeys", "params":[]}' http://localhost:9944
-)
-SESSION_KEY=$(printf "${OUTPUT}" | jq -r '.result')
-printf "${SESSION_KEY}"
-```
-
 * Optional: Store the example session key below into a variable
 
 ```bash
@@ -55,24 +77,6 @@ EOF
 SESSION_KEY=$(printf "${VALUE}" | jq -r '.result')
 printf "${SESSION_KEY}"
 ```
-
-* Optional: Set the validator session keys into the local validator
-  * **FIXME**: If I run the below command on the server that is running the validator instead of from a separate machine it returns error `API-WS: disconnected from ws://127.0.0.1:9944: 1006:: Abnormal Closure`, even if I am running the validator with `--unsafe-rpc-external --rpc-cors=all --rpc-methods=Unsafe` (that should not be used in production)
-  * Add secret seed in a file from the example
-    ```
-    cp ./scripts/.env-example ./scripts/.env
-    ```
-  * Populate ./scripts/.env with values.
-    * Obtain the IP address on the remote server with `ifconfig`
-    * Obtain the architecture of the remote server with `uname -a`
-  * Run 
-    ```
-    . ./scripts/rotate-keys-main.sh
-    ```
-  * **FIXME**: If I use the secret seed of a testnet account with sufficient balance and run the above it gives error:
-    ```
-    RpcError: 1010: Invalid Transaction: Inability to pay some fees , e.g. account balance too low
-    ``` 
 
 ## Run script on remote server from host
 
