@@ -57,26 +57,22 @@ printf "${SESSION_KEY}"
 ```
 
 * Optional: Set the validator session keys into the local validator
-  * Add the IP address of the remote server as the value of `IP_ADDRESS`. It may be obtained using `ifconfig`
-  * Add the secret seed as the value of `SEED`
-    * **IMPORTANT**: ONLY DO THIS FOR TESTING PURPOSES since it will be recorded in logs. Do not use with a wallet that will use funds of any value. 
-    * **FIXME**: In future load the secret from a file
-  * **FIXME**: If I run the below command on the server that is running the validator instead of from a separate machine it returns error `API-WS: disconnected from ws://127.0.0.1:9944: 1006:: Abnormal Closure`, even if I am running the validator with `--unsafe-rpc-external --rpc-cors=all --rpc-methods=Unsafe`(that should not be used in production)
-
-```bash
-uname -a
-export REMOTE_IP_ADDRESS=""
-export PLATFORM="linux/amd64"
-export SEED=""
-# the follow effectively runs `polkadot-js-api --ws ws://127.0.0.1:9944 --seed "<seed>" tx.session.setKeys <session_key: 0x...> None`
-# using `api.tx.session.setKeys`, where `setKeys(keys: KitchensinkRuntimeSessionKeys, proof: Bytes)`
-docker run -it --platform $PLATFORM \
-  --rm $(
-    docker pull --platform $PLATFORM jacogr/polkadot-js-tools:latest | grep Status |  awk 'NF>1{print $NF}'
-  ) api \
-  --ws ws://$REMOTE_IP_ADDRESS:9944 \
-  --seed $SEED tx.session.setKeys ${SESSION_KEY} None
-```
+  * **FIXME**: If I run the below command on the server that is running the validator instead of from a separate machine it returns error `API-WS: disconnected from ws://127.0.0.1:9944: 1006:: Abnormal Closure`, even if I am running the validator with `--unsafe-rpc-external --rpc-cors=all --rpc-methods=Unsafe` (that should not be used in production)
+  * Add secret seed in a file from the example
+    ```
+    cp ./scripts/.env-example ./scripts/.env
+    ```
+  * Populate ./scripts/.env with values.
+    * Obtain the IP address on the remote server with `ifconfig`
+    * Obtain the architecture of the remote server with `uname -a`
+  * Run 
+    ```
+    . ./scripts/rotate-keys-main.sh
+    ```
+  * **FIXME**: If I use the secret seed of a testnet account with sufficient balance and run the above it gives error:
+    ```
+    RpcError: 1010: Invalid Transaction: Inability to pay some fees , e.g. account balance too low
+    ``` 
 
 ## Run script on remote server from host
 
