@@ -43,7 +43,7 @@ printf "${SESSION_KEY}"
     * Use the session key generated earlier as the value of `SESSION_KEY`
   * Run 
     ```
-    . ./scripts/rotate-keys-main.sh
+    . ./scripts/rotate-keys.sh
     ```
   * **FIXME**: If I run the script not on the same machine as the validator and use the secret seed of a testnet account with sufficient balance and run the above it gives error:
     ```
