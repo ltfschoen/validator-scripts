@@ -37,6 +37,7 @@ echo "latest release $LATEST_RELEASE_URL_SHORT"
 
 # but we want the version from running `--version`
 # so get the version like `tangle-testnet-linux-amd64 1.0.0-6855ead-x86_64-linux-gnu`
+# TODO - also install later using this version that we temporarily downloaded
 export REMOTE_VERSION="$(
   rm /tmp/remote-version &&
   wget -O /tmp/remote-version https://github.com/webb-tools/tangle/releases/download/${LATEST_RELEASE_URL_SHORT}/tangle-${BINARY_INFIX}-linux-amd64 &&
@@ -55,6 +56,7 @@ then
 
   if [ "${IS_MAINNET}" = true ]
   then
+    # TODO - try and use `BINARY_INFIX` instead of hard-coding mainnet 
     cd /root/tangle-mainnet
   else
     cd /root/tangle-${BINARY_INFIX}
