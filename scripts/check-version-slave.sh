@@ -1,24 +1,27 @@
 #!/bin/sh
 
+# configurable
 IS_MAINNET=false
 
-# reset env
+# do not configure this - reset env
 LATEST_RELEASE_URL_SHORT= # e.g. `1.0.2`
-BINARY_INFIX= # e.g. `testnet` (testnet) or `default` (mainnet)
+BINARY_INFIX= # e.g. `default`, or `mainnet` value shown in binary filename
 REMOTE_VERSION= # e.g. `tangle-testnet-linux-amd64 1.0.2-xxx-x86_64-linux-gnu`
 LOCAL_VERSION= # e.g. `tangle-testnet-linux-amd64 1.0.0-6855ead-x86_64-linux-gnu`
+CHAIN_DIR_POSTFIX= # e.g. `testnet`, or `mainnet`
 
 echo "Running at: `date -u`"
 
-BINARY_INFIX="default"
 if [ "${IS_MAINNET}" = true ]
 then
   BINARY_INFIX="default"
-  echo "using Mainnet infix"
-  cd /root/tangle-mainnet
+  CHAIN_DIR_POSTFIX="mainnet"
+  echo "using Mainnet"
+  cd /root/tangle-${BINARY_INFIX}
 else
   BINARY_INFIX="testnet"
-  echo "using Testnet infix"
+  CHAIN_DIR_POSTFIX=${BINARY_INFIX}
+  echo "using Testnet"
   cd /root/tangle-${BINARY_INFIX}
 fi
 
@@ -46,7 +49,7 @@ export REMOTE_VERSION="$(
 )"
 echo "remote version: $REMOTE_VERSION"
 
-export LOCAL_VERSION="$(/usr/bin/tangle-testnet-linux-amd64 --version)"
+export LOCAL_VERSION="$(/usr/bin/tangle-${BINARY_INFIX}-linux-amd64 --version)"
 echo "local version: $LOCAL_VERSION"
 
 if [ "${REMOTE_VERSION}" != "${LOCAL_VERSION}" ]
@@ -54,14 +57,7 @@ then
   echo "downloading new release ${LATEST_RELEASE_URL_SHORT} with version ${REMOTE_VERSION} to replace local version ${LOCAL_VERSION}"
   systemctl stop validator
 
-  if [ "${IS_MAINNET}" = true ]
-  then
-    # TODO - try and use `BINARY_INFIX` instead of hard-coding mainnet 
-    cd /root/tangle-mainnet
-  else
-    cd /root/tangle-${BINARY_INFIX}
-  fi
-
+  cd /root/tangle-${BINARY_INFIX}
   mv tangle-${BINARY_INFIX}-linux-amd64 tangle-${BINARY_INFIX}-linux-amd64-$LOCAL_VERSION-old
   rm tangle-${BINARY_INFIX}-linux-amd64
   wget --show-progress -O tangle-${BINARY_INFIX}-linux-amd64 https://github.com/webb-tools/tangle/releases/download/${LATEST_RELEASE_URL_SHORT}/tangle-${BINARY_INFIX}-linux-amd64
@@ -95,9 +91,10 @@ then
   # remove subfolders, but not the /keystore
   if [ "${IS_MAINNET}" = true ]
   then
-    rm -rf ~/tangle/data-path/validator/luke1/chains/tangle-mainnet/db
-    rm -rf ~/tangle/data-path/validator/luke1/chains/tangle-mainnet/frontier
-    rm -rf ~/tangle/data-path/validator/luke1/chains/tangle-mainnet/network
+    # note that th chain folder on mainnet uses `mainnet` not `default`
+    rm -rf ~/tangle/data-path/validator/luke1/chains/tangle-${CHAIN_DIR_POSTFIX}/db
+    rm -rf ~/tangle/data-path/validator/luke1/chains/tangle-${CHAIN_DIR_POSTFIX}/frontier
+    rm -rf ~/tangle/data-path/validator/luke1/chains/tangle-${CHAIN_DIR_POSTFIX}/network
   else
     rm -rf ~/tangle-${BINARY_INFIX}/data-path/validator/luke1/chains/tangle-${BINARY_INFIX}/db
     rm -rf ~/tangle-${BINARY_INFIX}/data-path/validator/luke1/chains/tangle-${BINARY_INFIX}/frontier
