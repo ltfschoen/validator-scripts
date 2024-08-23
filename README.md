@@ -3,21 +3,16 @@
 ## Automatically update a validator node to the latest version
 
 * Note: Unless a client upgrade is needed updating the validator is not necessary
-* Create the following files and associated permissions onto the server
-```bash
-touch /root/check-version-main.sh && chmod 755 /root/check-version-main.sh
-touch /root/check-version-slave.sh && chmod 755 /root/check-version-slave.sh
-```
-* Paste the contents of the associated scripts included in this repository into the above files
-* Check and change the files if necessary depending on whether you are running the script on Tangle Mainnet or Tangle Testnet before running.
+* Fork and clone this repo into /root/validator-scripts
+* Check and configure the files if necessary depending on whether you are running the script on Tangle Mainnet or Tangle Testnet before running, by changing the value of `IS_MAINNET` in the file /root/validator-scripts/scripts/check-version-slave.sh
 * Create screen session `screen -S check-version`. see screen help https://gist.github.com/drewlesueur/950187/1e3382cbcd1ef012c68487fbc2e38c8963fc3b3c
-* Run the script in the background screen session with `nohup /root/check-version-main.sh & >> /root/check-version-log.log`
+* Run the script in the background screen session with `nohup /root/validator-scripts/scripts/check-version-main.sh & >> /root/check-version-log.log`
   * Note: To run the script immune to hangups and use `/dev/null` after `>` or `>>` with some file path if you care what's in the stdout
 * View log with `tail -f /root/check-version-log.log`
 * Kill process with `ps aux | grep check-version-log.log`, then `kill -9 <pid>`
 * Detach from that screen session to main bash `(Ctrl a) + d`
 * Return back to specific screen session `screen -x check-version`
-  * Kill window session if necessary with `Ctrl K`
+  * Kill window session if necessary with `(Ctrl a) + K`
 
 ## Rotate validator session keys with via CLI with Polkadot.js Tools instead of via UI with Polkadot.js Apps 
 

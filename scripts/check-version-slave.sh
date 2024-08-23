@@ -58,7 +58,7 @@ then
   systemctl stop validator
 
   cd /root/tangle-${BINARY_INFIX}
-  mv tangle-${BINARY_INFIX}-linux-amd64 tangle-${BINARY_INFIX}-linux-amd64-$LOCAL_VERSION-old
+  mv tangle-${BINAlRY_INFIX}-linux-amd64 tangle-${BINARY_INFIX}-linux-amd64-$LOCAL_VERSION-old
   rm tangle-${BINARY_INFIX}-linux-amd64
   wget --show-progress -O tangle-${BINARY_INFIX}-linux-amd64 https://github.com/webb-tools/tangle/releases/download/${LATEST_RELEASE_URL_SHORT}/tangle-${BINARY_INFIX}-linux-amd64
   chmod 755 tangle-${BINARY_INFIX}-linux-amd64
@@ -92,10 +92,12 @@ then
   if [ "${IS_MAINNET}" = true ]
   then
     # note that th chain folder on mainnet uses `mainnet` not `default`
+    rm -rf ~/tangle/data-path/validator/luke1/chains/tangle-${CHAIN_DIR_POSTFIX}/db/full
     rm -rf ~/tangle/data-path/validator/luke1/chains/tangle-${CHAIN_DIR_POSTFIX}/db
     rm -rf ~/tangle/data-path/validator/luke1/chains/tangle-${CHAIN_DIR_POSTFIX}/frontier
     rm -rf ~/tangle/data-path/validator/luke1/chains/tangle-${CHAIN_DIR_POSTFIX}/network
   else
+    rm -rf ~/tangle-${BINARY_INFIX}/data-path/validator/luke1/chains/tangle-${BINARY_INFIX}/db/full
     rm -rf ~/tangle-${BINARY_INFIX}/data-path/validator/luke1/chains/tangle-${BINARY_INFIX}/db
     rm -rf ~/tangle-${BINARY_INFIX}/data-path/validator/luke1/chains/tangle-${BINARY_INFIX}/frontier
     rm -rf ~/tangle-${BINARY_INFIX}/data-path/validator/luke1/chains/tangle-${BINARY_INFIX}/network
