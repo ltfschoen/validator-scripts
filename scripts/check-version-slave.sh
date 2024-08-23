@@ -43,7 +43,7 @@ export REMOTE_VERSION="$(
   chmod 755 /tmp/remote-version &&
   /tmp/remote-version --version
 )"
-echo "remove version: $REMOTE_VERSION"
+echo "remote version: $REMOTE_VERSION"
 
 export LOCAL_VERSION="$(/usr/bin/tangle-testnet-linux-amd64 --version)"
 echo "local version: $LOCAL_VERSION"
@@ -60,6 +60,7 @@ then
     cd /root/tangle-${BINARY_INFIX}
   fi
 
+  mv tangle-${BINARY_INFIX}-linux-amd64 tangle-${BINARY_INFIX}-linux-amd64-$LOCAL_VERSION-old
   rm tangle-${BINARY_INFIX}-linux-amd64
   wget --show-progress -O tangle-${BINARY_INFIX}-linux-amd64 https://github.com/webb-tools/tangle/releases/download/${LATEST_RELEASE_URL_SHORT}/tangle-${BINARY_INFIX}-linux-amd64
   chmod 755 tangle-${BINARY_INFIX}-linux-amd64
@@ -96,9 +97,9 @@ then
     rm -rf ~/tangle/data-path/validator/luke1/chains/tangle-mainnet/frontier
     rm -rf ~/tangle/data-path/validator/luke1/chains/tangle-mainnet/network
   else
-    rm -rf ~/tangle/data-path/validator/luke1/chains/tangle-${BINARY_INFIX}/db
-    rm -rf ~/tangle/data-path/validator/luke1/chains/tangle-${BINARY_INFIX}/frontier
-    rm -rf ~/tangle/data-path/validator/luke1/chains/tangle-${BINARY_INFIX}/network
+    rm -rf ~/tangle-${BINARY_INFIX}/data-path/validator/luke1/chains/tangle-${BINARY_INFIX}/db
+    rm -rf ~/tangle-${BINARY_INFIX}/data-path/validator/luke1/chains/tangle-${BINARY_INFIX}/frontier
+    rm -rf ~/tangle-${BINARY_INFIX}/data-path/validator/luke1/chains/tangle-${BINARY_INFIX}/network
   fi
 
   echo "reloading validator"
@@ -109,7 +110,7 @@ then
   # want to exit so it repeats, not keep it running
   # sudo journalctl -u validator.service -f
 
-  echo "success retarting validator with new version"
+  echo "success restarting validator with new version"
   exit 0
 else
   echo "no new release found"
